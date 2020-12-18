@@ -16,24 +16,24 @@ class FlightBuilder {
         LocalDateTime threeDaysFromNow = LocalDateTime.now().plusDays(3);
         return Arrays.asList(
             //A normal flight with two hour duration
-            createFlight(threeDaysFromNow, threeDaysFromNow.plusHours(2)),
+            createFlight("A normal flight with two hour duration",threeDaysFromNow, threeDaysFromNow.plusHours(2)),
             //A normal multi segment flight
-            createFlight(threeDaysFromNow, threeDaysFromNow.plusHours(2),
+            createFlight("A normal multi segment flight", threeDaysFromNow, threeDaysFromNow.plusHours(2),
                 threeDaysFromNow.plusHours(3), threeDaysFromNow.plusHours(5)),
             //A flight departing in the past
-            createFlight(threeDaysFromNow.minusDays(6), threeDaysFromNow),
+            createFlight("A flight departing in the past", threeDaysFromNow.minusDays(6), threeDaysFromNow),
             //A flight that departs before it arrives
-            createFlight(threeDaysFromNow, threeDaysFromNow.minusHours(6)),
+            createFlight("A flight that departs before it arrives", threeDaysFromNow, threeDaysFromNow.minusHours(6)),
             //A flight with more than two hours ground time
-            createFlight(threeDaysFromNow, threeDaysFromNow.plusHours(2),
+            createFlight("A flight with more than two hours ground time", threeDaysFromNow, threeDaysFromNow.plusHours(2),
                 threeDaysFromNow.plusHours(5), threeDaysFromNow.plusHours(6)),
             //Another flight with more than two hours ground time
-            createFlight(threeDaysFromNow, threeDaysFromNow.plusHours(2),
+            createFlight("Another flight with more than two hours ground time", threeDaysFromNow, threeDaysFromNow.plusHours(2),
                 threeDaysFromNow.plusHours(3), threeDaysFromNow.plusHours(4),
                 threeDaysFromNow.plusHours(6), threeDaysFromNow.plusHours(7)));
     }
 
-    private static Flight createFlight(final LocalDateTime... dates) {
+    private static Flight createFlight(final String name, final LocalDateTime... dates) {
         if ((dates.length % 2) != 0) {
             throw new IllegalArgumentException(
                 "you must pass an even number of dates");
@@ -42,7 +42,7 @@ class FlightBuilder {
         for (int i = 0; i < (dates.length - 1); i += 2) {
             segments.add(new Segment(dates[i], dates[i + 1]));
         }
-        return new Flight(segments);
+        return new Flight(name, segments);
     }
 }
 
@@ -50,10 +50,14 @@ class FlightBuilder {
  * Bean that represents a flight.
  */
 class Flight {
+    //для тестов
+    private final String name;
+
     private final List<Segment> segments;
 
-    Flight(final List<Segment> segs) {
-        segments = segs;
+    Flight(String name, List<Segment> segments) {
+        this.name = name;
+        this.segments = segments;
     }
 
     List<Segment> getSegments() {
@@ -62,7 +66,7 @@ class Flight {
 
     @Override
     public String toString() {
-        return segments.stream().map(Object::toString)
+        return name + " - " + segments.stream().map(Object::toString)
             .collect(Collectors.joining(" "));
     }
 }
